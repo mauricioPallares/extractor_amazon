@@ -1,0 +1,7 @@
+env/
+__pycache__/
+
+*.xlsx
+*.pyc
+vscode/
+*.json
