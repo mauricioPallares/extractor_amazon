@@ -1,5 +1,9 @@
 import re, math
 from bs4 import BeautifulSoup
+from formato import normalizarTexto
+
+unidad_peso = ["pounds", "ounces", "kilograms"]
+peso_en = ["Item Weight", "Package Dimensions", "Product Dimensions" ]
 
 class Extractor():
     """ Clase Extractor, posee metodos para extraer informacion estructurada de un producto de la tienda en linea amazon
@@ -47,6 +51,7 @@ class Extractor():
     def caracteristicas(self):
         caracteristicas = None
         caracteristicas = self.soup.find(id="featurebullets_feature_div")
+        #revisar error
         caracteristicas = caracteristicas.find_all('li', id=False)
         caracteristicas = " ".join([c.text.strip() for c in caracteristicas])
 
@@ -74,7 +79,7 @@ class Extractor():
                             clave: valor
                         })
         else:
-
+            
             info = self.soup.find(id='productDetails_feature_div')
             lista = info.table.find_all('tr') if info is not None else None
             nuevalista = {}
@@ -86,15 +91,26 @@ class Extractor():
                         clave: valor
                     })
 
-        pesoEncontrado = False
+        # pesoEncontrado = False
         peso = ""
 
-        if nuevalista and (pesoEncontrado is False):
+        if nuevalista:
             
             for k, v in nuevalista.items():
-                if k == "Item Weight" or k == "Product Dimensions":
-                    peso = v
-                    pesoEncontrado = True
+                # if k == "Item Weight" or k == "Package Dimensions" or k == "Product Dimensions":
+                #     peso = v
+                #     pesoEncontrado = True
+                k = normalizarTexto(k)
+                if k in peso_en:
+                    for up in unidad_peso:
+                        if up.lower() in v.lower():
+                            peso = v
+                            break
+            
+        # if peso is None or peso == "":
+        #     pass
+
         return peso
+
 
 

@@ -38,6 +38,9 @@ def enCola(sku):
 def quitarCola():
     return redis.spop("lista_skus").decode("utf-8")
 
+def counts():
+    return len(redis.smembers("lista_skus"))
+
 def api_url(sku):
     url = f"https://amazon.com/-es/dp/{sku}"
     playload = {'api_key': conf.API_TOKEN, 'url': url}

@@ -3,7 +3,7 @@ from datetime import datetime
 import configuraciones as conf 
 
 from modelo import Producto
-from helpers import realizar_peticion, quitarCola
+from helpers import realizar_peticion, quitarCola, counts
 from extractores import Extractor 
 from formato import limpiarTexto, limpiaPeso, limpiarPrecio, fixmarca
 
@@ -54,7 +54,11 @@ if __name__ == '__main__':
 
     print(f"iniciando estraccion at {tiempo_inicio}")
 
-    for i in range(5):
+    print(f"skus en cola {counts() :,}")
+    for i in range(100):
         [pile.spawn(iniciar_scraper) for _ in range(conf.max_threads)]
-        pool.waitall()
+    pool.waitall()
     # iniciar_scraper()
+
+    print(tiempo_inicio)
+    print(datetime.now())
