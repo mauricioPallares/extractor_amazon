@@ -3,7 +3,7 @@ from datetime import datetime
 import configuraciones as conf 
 
 from modelo import Producto
-from helpers import realizar_peticion, quitarCola, counts
+from helpers import realizar_peticion, quitarCola, counts, log
 from extractores import Extractor 
 from formato import limpiarTexto, limpiaPeso, limpiarPrecio, fixmarca
 
@@ -17,9 +17,11 @@ def iniciar_scraper():
     global tiempo_inicio
 
     sku = quitarCola()
-    print(sku)
+    # print(sku)
+    log(f"INFO: Iniciando la extraccion del sku: {sku}.")
     if not sku:
-        print("ADVERTENCIA: sku no encotrado en cola. Reintentando...")
+        # print("ADVERTENCIA: sku no encotrado en cola. Reintentando...")
+        log("ADVERTENCIA: sku no encotrado en cola. Reintentando...")
         pile.spawn(iniciar_scraper)
         return
     
@@ -47,19 +49,22 @@ def iniciar_scraper():
 
         producto.guardar()
     else:
-        print(f"El sku: {sku} ya esta en la base de datos ")
+        # print(f"El sku: {sku} ya esta en la base de datos ")
+        log("ADVERTENCIA: El sku: {sku} ya esta en la base de datos.")
+    
+    log(f"INFO: operacion terminada sku: {sku}.")
 
     
 if __name__ == '__main__':
 
-    print(f"iniciando estraccion at {tiempo_inicio}")
+    # print(f"iniciando extraccion at {tiempo_inicio}")
 
-    print(f"skus en cola {counts() :,}")
+    # print(f"skus en cola {counts() :,}")
 
-    while(counts() > 0):
-        [pile.spawn(iniciar_scraper) for _ in range(conf.max_threads)]
-    pool.waitall()
-    # iniciar_scraper()
+    # while(counts() > 0):
+    #     [pile.spawn(iniciar_scraper) for _ in range(conf.max_threads)]
+    # pool.waitall()
+    iniciar_scraper()
 
     print(tiempo_inicio)
     print(datetime.now())

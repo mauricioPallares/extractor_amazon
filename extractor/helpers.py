@@ -24,23 +24,26 @@ def realizar_peticion(sku):
             if r.status_code in [200,404]:
                 break
         except:
-            print(r.status_code)
+            log(f"ERROR: requests status_code {r.status_code}")
             
             r = ""
         
     
     if r.status_code != 200:
-        print(r.status_code)
-        enCola(sku)
+        
         return None
         
+    if r.status_code == 429:
+        log(f"ERROR: requests status_code {r.status_code}")
+        enCola(sku)
     
     return r
 
 def log(msg:str):
     if conf.log_stdout:
         try:
-            print("{}: {}".format(datetime.now(), msg))
+            fecha = datetime.now().strftime("%m-%d-%Y_%H:%M:%S")
+            print(f"[{fecha}]: {msg}")
         except UnicodeEncodeError:
             pass
         
