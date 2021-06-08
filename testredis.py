@@ -1,9 +1,13 @@
-import redis
+import redis, re
 
 r = redis.Redis()
 
-r.set('foo', 'bar')
 
-r.get('foo')
+var = None
+patron = re.compile('(?<="hiRes":")(.*?)(?=")', re.MULTILINE | re.DOTALL)
+print(type(str(var)))
+print(str(var))
 
-print(r.get('foo'))
+imagenes = re.findall(patron, str(var))
+# print(r.spop('set'))
+print(imagenes)

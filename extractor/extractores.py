@@ -26,7 +26,7 @@ class Extractor():
         imagenes = self.soup.find(id="imageBlock_feature_div")
         imagenes = imagenes.find(text=re.compile(
             '(?<="hiRes":")(.*?)(?=")', re.MULTILINE | re.DOTALL))
-        imagenes = re.findall(patron, imagenes)
+        imagenes = re.findall(patron, str(imagenes))
 
         return imagenes
 
@@ -77,15 +77,15 @@ class Extractor():
                         clave: valor
                     })
 
-            pesoEncontrado = False
-            peso = ""
+        pesoEncontrado = False
+        peso = ""
 
-            if nuevalista:
-                for k, v in nuevalista.items():
-                    if k == "Item Weight" or k == "Package Dimensions":
-                        peso = v
-                        pesoEncontrado = True
-
-            return peso
+        if nuevalista and (pesoEncontrado is False):
+            
+            for k, v in nuevalista.items():
+                if k == "Item Weight" or k == "Product Dimensions":
+                    peso = v
+                    pesoEncontrado = True
+        return peso
 
 

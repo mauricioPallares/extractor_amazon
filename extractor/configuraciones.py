@@ -19,9 +19,9 @@ headers = {
 }
 
 
-API_TOKEN =""
+API_TOKEN ="8e34d636585f179c44adcc9ecb8ede92"
 
-API_BASE_URL =""
+API_BASE_URL ="http://api.scraperapi.com/?"
 
 
 max_requests = 2 * 10**6  # two million

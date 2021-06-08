@@ -40,8 +40,8 @@ class Producto(object):
         self.disponibilidad,
         self.descripcion,
         self.caracteristicas,
-        self.imagenes,
-        self.peso
+        self.peso,
+        " ".join(self.imagenes),
         ))
 
         con.commit()
