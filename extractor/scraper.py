@@ -55,7 +55,8 @@ if __name__ == '__main__':
     print(f"iniciando estraccion at {tiempo_inicio}")
 
     print(f"skus en cola {counts() :,}")
-    for i in range(100):
+
+    while(counts() > 0):
         [pile.spawn(iniciar_scraper) for _ in range(conf.max_threads)]
     pool.waitall()
     # iniciar_scraper()

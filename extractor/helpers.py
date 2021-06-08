@@ -24,14 +24,26 @@ def realizar_peticion(sku):
             if r.status_code in [200,404]:
                 break
         except:
+            print(r.status_code)
+            
             r = ""
         
     
     if r.status_code != 200:
+        print(r.status_code)
+        enCola(sku)
         return None
+        
     
     return r
 
+def log(msg:str):
+    if conf.log_stdout:
+        try:
+            print("{}: {}".format(datetime.now(), msg))
+        except UnicodeEncodeError:
+            pass
+        
 def enCola(sku):
     return redis.sadd("lista_skus", sku)
 
