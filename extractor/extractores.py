@@ -2,13 +2,22 @@ import re, math
 from bs4 import BeautifulSoup
 
 class Extractor():
-
+    """ Clase Extractor, posee metodos para extraer informacion estructurada de un producto de la tienda en linea amazon
+    """    
     def __init__(self, respons):
-        
+        """[summary]
+
+        Args:
+            respons (requests): Recibe un request.text, desde una peticion a https://amazon.com/dp/sku 
+        """        
         self.soup = BeautifulSoup(respons, "html.parser")
 
     def titulo(self):
+        """[summary]
 
+        Returns:
+            [String]: [Titulo del producto]
+        """        
         titulo = self.soup.find(id='productTitle')
         return titulo.text.strip()
 
