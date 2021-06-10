@@ -1,0 +1,21 @@
+skus en cola 28,244
+[06-10-2021_11:20:56]: INFO: Iniciando la extraccion del sku: B073HZ6671.
+[06-10-2021_11:20:56]: INFO: Iniciando la extraccion del sku: B0758L64L9.
+[06-10-2021_11:20:56]: ADVERTENCIA: El sku: B0758L64L9 ya esta en la base de datos.
+[06-10-2021_11:20:56]: INFO: operacion terminada sku: B0758L64L9.
+[06-10-2021_11:20:56]: INFO: Iniciando la extraccion del sku: B085V5ZW9Z.
+[06-10-2021_11:20:56]: INFO: Iniciando la extraccion del sku: B01KTVAL9Y.
+[06-10-2021_11:20:56]: INFO: Iniciando la extraccion del sku: B06ZZQMVBK.
+[06-10-2021_11:20:56]: INFO: Iniciando la extraccion del sku: B008FM041A.
+[06-10-2021_11:20:56]: INFO: Iniciando la extraccion del sku: B083S4CMN7.
+[06-10-2021_11:20:56]: INFO: Iniciando la extraccion del sku: B0043REC8C.
+[06-10-2021_11:20:56]: INFO: Iniciando la extraccion del sku: B071D58ZY5.
+[06-10-2021_11:20:56]: ADVERTENCIA: El sku: B071D58ZY5 ya esta en la base de datos.
+[06-10-2021_11:20:56]: INFO: operacion terminada sku: B071D58ZY5.
+[06-10-2021_11:20:56]: INFO: Iniciando la extraccion del sku: B07KTCLGRM.
+[06-10-2021_11:20:56]: INFO: Iniciando la extraccion del sku: B08PNYW1V8.
+[06-10-2021_11:20:56]: INFO: Iniciando la extraccion del sku: B08RCGZ5ZP.
+[06-10-2021_11:20:57]: ERROR: requests status_code 429
+[06-10-2021_11:20:57]: INFO: Iniciando la extraccion del sku: B08XZPX9CK.
+[06-10-2021_11:20:57]: ERROR: requests status_code 429
+[06-10-2021_11:20:57]: INFO: Iniciando la extraccion del sku: B08CLVVJ8C.

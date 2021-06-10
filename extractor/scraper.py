@@ -50,7 +50,7 @@ def iniciar_scraper():
         producto.guardar()
     else:
         # print(f"El sku: {sku} ya esta en la base de datos ")
-        log("ADVERTENCIA: El sku: {sku} ya esta en la base de datos.")
+        log(f"ADVERTENCIA: El sku: {sku} ya esta en la base de datos.")
     
     log(f"INFO: operacion terminada sku: {sku}.")
 
@@ -59,12 +59,12 @@ if __name__ == '__main__':
 
     # print(f"iniciando extraccion at {tiempo_inicio}")
 
-    # print(f"skus en cola {counts() :,}")
+    print(f"skus en cola {counts() :,}")
 
-    # while(counts() > 0):
-    #     [pile.spawn(iniciar_scraper) for _ in range(conf.max_threads)]
-    # pool.waitall()
-    iniciar_scraper()
+    while(counts() > 0):
+        [pile.spawn(iniciar_scraper) for _ in range(conf.max_threads)]
+    pool.waitall()
+    # iniciar_scraper()
 
     print(tiempo_inicio)
     print(datetime.now())

@@ -23,19 +23,20 @@ def realizar_peticion(sku):
             r = requests.get(api_url(sku))
             if r.status_code in [200,404]:
                 break
-        except:
-            log(f"ERROR: requests status_code {r.status_code}")
+        except Exception as e:
+            #error quitar r
+            log(f"ERROR: {e}")
             
             r = ""
         
+           
+    if r.status_code == 429:
+        log(f"ERROR: requests status_code {r.status_code}")
+        enCola(sku)
     
     if r.status_code != 200:
         
         return None
-        
-    if r.status_code == 429:
-        log(f"ERROR: requests status_code {r.status_code}")
-        enCola(sku)
     
     return r
 

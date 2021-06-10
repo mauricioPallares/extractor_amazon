@@ -1,6 +1,7 @@
 import re, math
 from bs4 import BeautifulSoup
 from formato import normalizarTexto
+from helpers import log
 
 unidad_peso = ["pounds", "ounces", "kilograms"]
 peso_en = ["Item Weight", "Package Dimensions", "Product Dimensions" ]
@@ -52,10 +53,17 @@ class Extractor():
         caracteristicas = None
         caracteristicas = self.soup.find(id="featurebullets_feature_div")
         #revisar error
-        caracteristicas = caracteristicas.find_all('li', id=False)
-        caracteristicas = " ".join([c.text.strip() for c in caracteristicas])
+        try:
 
-        return caracteristicas
+            caracteristicas = caracteristicas.find_all('li', id=False)
+            caracteristicas = " ".join([c.text.strip() for c in caracteristicas])
+            return caracteristicas
+
+        except AttributeError:
+            log("Error: Atributo no encontrando.")
+            return ""
+
+       
 
     def descripcion(self):
         descripcion = None
