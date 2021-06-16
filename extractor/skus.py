@@ -6,7 +6,8 @@ DIR_PACK = os.path.dirname(os.path.realpath(__file__)) + "/paquetes"
 DIR_AGREGADOS = os.path.dirname(os.path.realpath(__file__)) + "/agregados"
 
 def cargar_skus_from_file(archivo):
-    lista = pd.read_excel(archivo)
+    
+    lista = pd.read_excel(os.path.join(DIR_PACK,archivo))
     lista_sku = set(lista['asin'].to_list())
 
     for sku in lista_sku:
@@ -15,32 +16,36 @@ def cargar_skus_from_file(archivo):
     return len(lista_sku)
 
 def mover_archivo(archivo):
-    shutil.move(os.path.join(DIR_PACK,archivo),os.path.join(DIR_AGREGADOS,archivo_a_listar))
+    shutil.move(os.path.join(DIR_PACK,archivo),os.path.join(DIR_AGREGADOS,archivo))
+    print(f"\nArchivo {archivo} movido a {os.path.join(DIR_AGREGADOS,archivo)}")
 
-archivos_contenidos = os.listdir(DIR_PACK)
+def menu():
+    op = 0
+    print("\n\n\tArchivos para agregar a la cola de redis")
+    print("------------------------------------------------------\n")
 
-op = 0
-
-if len(archivos_contenidos) > 0:
-
-    try:
-        print("\n\n\tArchivos para agregar a la cola de redis")
-        print("------------------------------------------------------\n")
-
-        for file in archivos_contenidos:
+    for file in archivos_contenidos:
             
 
             print(f"\t{op} => {file}")
             op += 1
 
-        print("------------------------------------------------------\n")
-        opcion = int(input("opcion del archivo: "))
+    print("------------------------------------------------------\n")
+    opcion = int(input("opcion del archivo: "))
+    return opcion
 
+archivos_contenidos = os.listdir(DIR_PACK)
+
+
+
+if len(archivos_contenidos) > 0:
+
+    try:
+        opcion = menu()
 
         archivo_a_listar = archivos_contenidos[opcion]
-        # print(os.path.join(DIR_PACK,archivo_a_listar))
 
-        cantidad = cargar_skus_from_file((os.path.join(DIR_PACK,archivo_a_listar)))
+        cantidad = cargar_skus_from_file(archivo_a_listar)
 
         mover_archivo(archivo_a_listar)
 
