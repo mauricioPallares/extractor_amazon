@@ -23,6 +23,7 @@ disponibilidad_false = [
     "in stock on",
 ]
 cantidad_minima = 3
+
 class Extractor():
     """ Clase Extractor, posee metodos para extraer informacion estructurada de un producto de la tienda en linea amazon
     """

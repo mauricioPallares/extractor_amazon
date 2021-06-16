@@ -3,7 +3,7 @@ from datetime import datetime
 import configuraciones as conf 
 
 from modelo import Producto
-from helpers import realizar_peticion, quitarCola, counts, log, traducir
+from helpers import realizar_peticion, quitarCola, counts, log
 from extractores import Extractor 
 from formato import limpiarTexto, limpiaPeso, limpiarPrecio, fixmarca
 
@@ -35,14 +35,14 @@ def iniciar_scraper():
 
         producto = Producto(
             sku = sku,
-            titulo  = traducir(limpiarTexto(ex.titulo())),
+            titulo  = limpiarTexto(ex.titulo()),
             precio  =  limpiarPrecio(ex.precio()),
             marca  = fixmarca(ex.marca()),
             imagenes  = ex.imagenes(),
             disponibilidad = limpiarTexto(ex.disponibilidad()),
             stock = ex.stock(),
-            caracteristicas  = traducir(limpiarTexto(ex.caracteristicas())),
-            descripcion  = traducir(limpiarTexto(ex.descripcion())),
+            caracteristicas  = limpiarTexto(ex.caracteristicas()),
+            descripcion  = limpiarTexto(ex.descripcion()),
             peso = limpiaPeso(ex.peso()),
         )
 
@@ -58,14 +58,10 @@ def iniciar_scraper():
     
 if __name__ == '__main__':
 
-    # print(f"iniciando extraccion at {tiempo_inicio}")
-
-    print(f"skus en cola {counts() :,}")
-
     while(counts() > 0):
         [pile.spawn(iniciar_scraper) for _ in range(conf.max_threads)]
     pool.waitall()
-    # iniciar_scraper()
+    
 
-    print(tiempo_inicio)
-    print(datetime.now())
+    print(f"la extraccion inicio a {tiempo_inicio} y termino a {datetime.now()}")
+    
