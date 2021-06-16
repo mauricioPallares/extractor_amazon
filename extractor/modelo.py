@@ -154,76 +154,31 @@ class Producto(object):
         
 
 
-def get_stock(disponibilidad):
-    stock = None
+# def get_stock(disponibilidad):
+#     stock = None
 
-    for dip in disponibilidad_true:
-        if disponibilidad.lower().startswith(dip.lower()):
-            stock = "En Stock"
-            break
+#     for dip in disponibilidad_true:
+#         if disponibilidad.lower().startswith(dip.lower()):
+#             stock = "En Stock"
+#             break
 
     
-    for dip in disponibilidad_false:
-        if disponibilidad.lower().startswith(dip.lower()):
-            stock = "Sin Stock"
-            break
+#     for dip in disponibilidad_false:
+#         if disponibilidad.lower().startswith(dip.lower()):
+#             stock = "Sin Stock"
+#             break
 
-    if not stock:
-        if disponibilidad == "":
-            stock = "Sin Stock"
+#     if not stock:
+#         if disponibilidad == "":
+#             stock = "Sin Stock"
 
-    if not stock:
-        if disponibilidad.lower().startswith("only"):
-            cant = [int(s) for s in disponibilidad.split() if s.isdigit()]
-            if cant[0] >= cantidad_minima:
+#     if not stock:
+#         if disponibilidad.lower().startswith("only"):
+#             cant = [int(s) for s in disponibilidad.split() if s.isdigit()]
+#             if cant[0] >= cantidad_minima:
 
-                stock = "En Stock"
-            else:
-                stock = "Sin Stock"
+#                 stock = "En Stock"
+#             else:
+#                 stock = "Sin Stock"
 
-    return stock
-if __name__ == '__main__':
-   
-    import eventlet
-    pool = eventlet.GreenPool(conf.max_threads)
-    pile = eventlet.GreenPile(pool)
-
-    sql = "SELECT sku, titulo, descripcion, caracteristicas FROM productos_andres"
-    cursor.execute(sql)
-    data = cursor.fetchall()
-
-    print(len(data))
-
-    def run_traductor():
-        producto = data.pop()
-
-        try:
-            print(producto['sku'])
-            newTitulo = traducir(producto['titulo'])
-            newDesc = traducir(producto['descripcion'])
-            newCara = traducir(producto['caracteristicas'])
-            
-            print("\n\n"+newTitulo)
-            
-
-            sql = "UPDATE productos_andres SET titulo = %s, caracteristicas = %s, descripcion = %s WHERE sku = %s"
-            cursor.execute(sql, (
-                newTitulo,
-                newDesc,
-                newCara,
-                producto['sku']
-            ))
-            con.commit()
-            print("done")
-        except Exception as e:
-            print(producto['sku'],"otro error" ,e )
-            
-
-
-    while(len(data) > 0):
-        [pile.spawn(run_traductor) for _ in range(10)]
-    pool.waitall()
-       
-    
-    
-    # print(get_stock("Only 4 left in stock - order soon."))
+#     return stock
