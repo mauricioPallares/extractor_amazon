@@ -1,13 +1,18 @@
-import redis, re
+data = [
+    {'nombre': "camilo",
+    'apellidos':"perez"},
+    {'nombre': 'omar',
+    'apellidos':"lopez"}
+]
+print(len(data))
 
-r = redis.Redis()
 
 
-var = None
-patron = re.compile('(?<="hiRes":")(.*?)(?=")', re.MULTILINE | re.DOTALL)
-print(type(str(var)))
-print(str(var))
+def fun():
+    return data.pop()
 
-imagenes = re.findall(patron, str(var))
-# print(r.spop('set'))
-print(imagenes)
+cliente = fun()
+
+print(cliente['nombre'])
+print(cliente['apellidos'])
+print(len(data))

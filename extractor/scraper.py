@@ -3,7 +3,7 @@ from datetime import datetime
 import configuraciones as conf 
 
 from modelo import Producto
-from helpers import realizar_peticion, quitarCola, counts, log
+from helpers import realizar_peticion, quitarCola, counts, log, traducir
 from extractores import Extractor 
 from formato import limpiarTexto, limpiaPeso, limpiarPrecio, fixmarca
 
@@ -33,26 +33,27 @@ def iniciar_scraper():
         
         ex = Extractor(soup.text)
 
-        item = {
-            'sku': sku,
-            'titulo' : limpiarTexto(ex.titulo()),
-            'precio' :  limpiarPrecio(ex.precio()),
-            'marca' : fixmarca(ex.marca()),
-            'imagenes' : ex.imagenes(),
-            'disponibilidad' : limpiarTexto(ex.disponibilidad()),
-            'caracteristicas' : limpiarTexto(ex.caracteristicas()),
-            'descripcion' : limpiarTexto(ex.descripcion()),
-            'peso': limpiaPeso(ex.peso()),
-        } 
+        producto = Producto(
+            sku = sku,
+            titulo  = traducir(limpiarTexto(ex.titulo())),
+            precio  =  limpiarPrecio(ex.precio()),
+            marca  = fixmarca(ex.marca()),
+            imagenes  = ex.imagenes(),
+            disponibilidad = limpiarTexto(ex.disponibilidad()),
+            stock = ex.stock(),
+            caracteristicas  = traducir(limpiarTexto(ex.caracteristicas())),
+            descripcion  = traducir(limpiarTexto(ex.descripcion())),
+            peso = limpiaPeso(ex.peso()),
+        )
 
-        producto = Producto(item)
+        print(producto)
 
         producto.guardar()
     else:
         # print(f"El sku: {sku} ya esta en la base de datos ")
         log(f"ADVERTENCIA: El sku: {sku} ya esta en la base de datos.")
     
-    log(f"INFO: operacion terminada sku: {sku}.")
+    # log(f"INFO: operacion terminada sku: {sku}.")
 
     
 if __name__ == '__main__':
