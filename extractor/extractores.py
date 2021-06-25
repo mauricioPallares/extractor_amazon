@@ -98,9 +98,6 @@ class Extractor():
 
         return stock
 
-        
-                
-
     def caracteristicas(self):
         caracteristicas = None
         caracteristicas = self.soup.find(id="featurebullets_feature_div")

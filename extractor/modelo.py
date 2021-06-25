@@ -129,10 +129,25 @@ class Producto(object):
     
     def actualizar(self):
         sql = "UPDATE productos_andres SET precio = %s , disponibilidad = %s WHERE sku = %s"
+        
 
         cursor.execute(sql, (
             self.__precio,
             self.__disponibilidad,
+            self.__sku
+        ))
+
+        con.commit()
+    
+    def actualizar_stock(self):
+        
+        sql = "UPDATE producto SET precio = %s , inStock = %s WHERE sku = %s"
+
+        stock = 1 if self.__stock == "En Stock" else 0
+
+        cursor.execute(sql, (
+            self.__precio,
+            stock,
             self.__sku
         ))
 
@@ -143,7 +158,7 @@ class Producto(object):
 
     @staticmethod
     def esta_en_DB(sku):
-        sql = "SELECT sku FROM productos_andres WHERE sku=%s"
+        sql = "SELECT sku FROM producto WHERE sku=%s"
         val = (sku,)
         cursor.execute(sql, val)
         data = cursor.fetchone()        
@@ -151,6 +166,8 @@ class Producto(object):
             return True
         else:
             return False
+    
+
         
 
 
@@ -182,3 +199,16 @@ class Producto(object):
 #                 stock = "Sin Stock"
 
 #     return stock
+
+if __name__ == "__main__":
+
+    print(Producto.esta_en_DB("024370349X"))
+
+    p = Producto()
+
+    p.sku = "024370349X"
+    p.precio = "18.90"
+    p.stock = "En Stock"
+
+    print(p)
+    p.actualizar_stock()
