@@ -14,6 +14,7 @@ cursor = con.cursor( dictionary=True)
 
 class Producto(object):
 
+
     def __init__(self, sku = None, titulo = None, precio = None, marca = None, disponibilidad = None, stock = None, descripcion = None, caracteristicas = None, imagenes = None, peso = None):
         super(Producto, self).__init__()
         self.__sku = sku
@@ -158,7 +159,7 @@ class Producto(object):
 
     @staticmethod
     def esta_en_DB(sku):
-        sql = "SELECT sku FROM producto WHERE sku=%s"
+        sql = "SELECT sku FROM productos_andres WHERE sku=%s"
         val = (sku,)
         cursor.execute(sql, val)
         data = cursor.fetchone()        

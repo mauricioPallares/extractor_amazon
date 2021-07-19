@@ -1,9 +1,11 @@
 import requests as req
 from bs4 import BeautifulSoup
 import time
+import requests
 
 url = 'http://www.useragentstring.com/pages/useragentstring.php?name=Firefox'
 
+requests.get(url)
 def save(br,ua):
   
   file = br+'.txt'

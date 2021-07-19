@@ -1,7 +1,15 @@
 import unicodedata, re
 
 
-def quitarTildes(texto):
+def quitarTildes(texto: str) -> str:
+    """Esta funcion elimina todas las tildes de una cadena de string
+
+    Args:
+        texto (str): Cadena original
+
+    Returns:
+        str: Cadena sin tildes
+    """
     replacements = (
         ("á", "a"),
         ("é", "e"),
@@ -17,7 +25,15 @@ def quitarTildes(texto):
 
 
 
-def normalizarTexto(texto):
+def normalizarTexto(texto: str) -> str:
+    """[summary]
+
+    Args:
+        texto (str): Cadena original
+
+    Returns:
+        str: Cadena normalizada
+    """
 
     texto = texto or ""
     
@@ -77,8 +93,15 @@ def limpiaPeso(peso):
 
 
 
-def arrayImagenes(imagenes):
+def arrayImagenes(imagenes: str) -> list(dict):
+    """ toma el campo imagenes, que es un cadena de imagenes separadas por espacion en blanco o coma, y la convierte en una lista de diccionarios, que contiene el formato de imagenes de mercadolibre
 
+    Args:
+        imagenes (str): cadena que contiene la informacion de las imagenes
+
+    Returns:
+        list: lista de imagenes 
+    """
     if len(imagenes.split(",")) == 1:
         newImagenes = imagenes.split(" ")
     else:
@@ -99,8 +122,15 @@ def arrayImagenes(imagenes):
 
 
 
-def fixmarca(marca):
-    
+def fixmarca(marca: str) -> str:
+    """ Esta funcion normaliza la marca, eliminando caracteres especiales y capilizando el primer caracter de cada palabra
+
+    Args:
+        marca (str): nombre de la marca del producto
+
+    Returns:
+        str: marca del producto normalizada
+    """
     marca = marca or "Genérica"
 
     if marca is None or marca == "":

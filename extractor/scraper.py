@@ -57,9 +57,10 @@ def iniciar_scraper():
 
     
 if __name__ == '__main__':
-
-    while(counts() > 0):
+    cont = 0
+    while(cont < 100):
         [pile.spawn(iniciar_scraper) for _ in range(conf.max_threads)]
+        cont = cont + 1
     pool.waitall()
     
 
