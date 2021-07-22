@@ -1,7 +1,7 @@
 import mysql.connector
 import json
 import configuraciones as conf
-from helpers import traducir
+
 
 con = mysql.connector.connect(
     host = conf.DB['host'],
@@ -110,7 +110,7 @@ class Producto(object):
     def guardar(self):
         sql = """
         INSERT IGNORE INTO 
-            productos_andres (sku, titulo, precio, marca, disponibilidad, descripcion, caracteristicas, peso, imagenes) 
+            productos_paula (sku, titulo, precio, marca, disponibilidad, descripcion, caracteristicas, peso, imagenes) 
         VALUES 
             (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
 
@@ -129,7 +129,7 @@ class Producto(object):
         con.commit()
     
     def actualizar(self):
-        sql = "UPDATE productos_andres SET precio = %s , disponibilidad = %s WHERE sku = %s"
+        sql = "UPDATE productos_paula SET precio = %s , disponibilidad = %s WHERE sku = %s"
         
 
         cursor.execute(sql, (
@@ -159,7 +159,7 @@ class Producto(object):
 
     @staticmethod
     def esta_en_DB(sku):
-        sql = "SELECT sku FROM productos_andres WHERE sku=%s"
+        sql = "SELECT sku FROM productos_paula WHERE sku=%s"
         val = (sku,)
         cursor.execute(sql, val)
         data = cursor.fetchone()        

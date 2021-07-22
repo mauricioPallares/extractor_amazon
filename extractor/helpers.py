@@ -1,17 +1,20 @@
 import eventlet
-import os
+import os, time
+
 import random
 from datetime import datetime
 from urllib.parse import urlencode
 import redis
 import configuraciones as conf
 from ua import users_agents
+# from requests.exceptions import ConnectionError
 
 redis = redis.StrictRedis(host=conf.redis_host,
                           port=conf.redis_port, db=conf.redis_db)
 
 
 requests = eventlet.import_patched('requests.__init__')
+# exepcionConecio = eventlet.import_patched('requests.exceptions.ConnectionError')
 time = eventlet.import_patched('time')
 
 
@@ -27,9 +30,11 @@ def realizar_peticion(sku: str):
     Returns:
         [requets.Response]: [description]
     """
-    proxies = get_proxy()
 
-    for _ in range(REINTENTOS):
+
+    proxies = get_proxy()
+    reintentos = 0
+    while (reintentos < REINTENTOS):
         try:
             r = requests.get(
                 url=amazon_url(sku),
@@ -37,16 +42,29 @@ def realizar_peticion(sku: str):
                 proxies=proxies)
 
             if r.status_code in [200, 404]:
+                ya_descargado(sku)
                 break
 
+        # except requests.ConnectionError as e:
+        #     # print(e, "Error de coneccion maximo intento de coneciones")
+        #     log(e, sku= sku)
+        #     reintentos += 1
+        #     time.sleep(5)
+        #     log(f"reintentado {reintentos}", sku=sku)
+
+        #     realizar_peticion(sku=sku)
+
+
+            # r = ""
         except Exception as e:
             # error quitar r
-            log(f"ERROR: {e}")
+            log(f"ERROR: {e}", sku = sku)
+            time.sleep(5)
+            reintentos += 1
 
-            r = ""
 
     if r.status_code == 429:
-        log(f"ERROR: requests status_code {r.status_code}")
+        log(f"ERROR: requests status_code {r.status_code}", sku = sku)
         enCola(sku)
 
     if r.status_code != 200:
@@ -56,7 +74,7 @@ def realizar_peticion(sku: str):
     return r
 
 
-def log(msg: str):
+def log(msg: str, sku: str = None):
     """[summary]
 
     Args:
@@ -65,7 +83,7 @@ def log(msg: str):
     if conf.log_stdout:
         try:
             fecha = datetime.now().strftime("%m-%d-%Y_%H:%M:%S")
-            print(f"[{fecha}]: {msg}")
+            print(f"[{fecha}]: {sku}=>{msg}")
         except UnicodeEncodeError:
             pass
 
@@ -73,12 +91,14 @@ def log(msg: str):
 
 
 def enCola(sku):
-    return redis.sadd("lista_skus", sku)
+    return redis.sadd("sku", sku)
 
 
-def quitarCola():
-    return redis.spop("lista_skus").decode("utf-8")
+def quitarCola(conjunto):
+    return redis.spop(conjunto).decode("utf-8")
 
+def ya_descargado(sku):
+    return redis.sadd("descargado", sku)
 
 def cola_actualizacion():
     return redis.spop("sku_652703678").decode("utf-8")
@@ -88,8 +108,8 @@ def cola_url():
     return redis.spop("lista_urls").decode("utf-8")
 
 
-def counts():
-    return redis.scard("lista_skus")
+def counts(conjunto):
+    return redis.scard(conjunto)
 
 
 def num_cola():
@@ -111,7 +131,7 @@ def amazon_url(sku: str) -> str:
     Returns:
         str: Url formateada del producto
     """
-    url = f"https://amazon.com/dp/{sku}"
+    url = f"https://amazon.com/-es/dp/{sku}"
     # playload = {'api_key': conf.API_TOKEN, 'url': url}
     # proxy_url = conf.API_BASE_URL + urlencode(playload)
     # print(url)
@@ -124,7 +144,8 @@ def get_header() -> dict:
     Returns:
         dict: diccionario de encabezados
     """
-    conf.headers.update({"User-Agent": random.choice(users_agents)})
+    # conf.headers.update({"User-Agent": random.choice(users_agents)})
+    conf.headers.update({"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36"})
     return conf.headers
 
 
@@ -148,13 +169,12 @@ def get_proxy() -> dict:
     )
 
     return {
-        "http": proxy_url,
-        "https": proxy_url
+        "http": proxy_url
     }
 
 
 if __name__ == '__main__':
-
-    # print(get_proxy())
-    r = realizar_peticion("B00FLYWNYQ")
-    print(r.status_code)
+    from extractores import Extractor
+    r = realizar_peticion(sku= "B08LMPP92X")
+    ex = Extractor(r.text)
+    # print(realizar_peticion(sku= "B08LMPP92X"))

@@ -93,7 +93,7 @@ def limpiaPeso(peso):
 
 
 
-def arrayImagenes(imagenes: str) -> list(dict):
+def arrayImagenes(imagenes: str) -> list:
     """ toma el campo imagenes, que es un cadena de imagenes separadas por espacion en blanco o coma, y la convierte en una lista de diccionarios, que contiene el formato de imagenes de mercadolibre
 
     Args:

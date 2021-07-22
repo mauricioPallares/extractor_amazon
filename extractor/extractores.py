@@ -35,39 +35,64 @@ class Extractor():
             respons (requests): Recibe un request.text, desde una peticion a https://amazon.com/dp/sku 
         """
         self.soup = BeautifulSoup(respons, "html.parser")
+        print(self.soup.text)
 
-    def titulo(self):
-        """[summary]
+    def titulo(self) -> str:
+        """ Esta funcion retorna el titulo del producto de Amazon
 
         Returns:
-            [String]: [Titulo del producto]
+            str: Titulo del producto
         """
-        titulo = self.soup.find(id='productTitle')
-        return titulo.text.strip()
+        try:
+
+            titulo = self.soup.find(id='productTitle')
+            return titulo.text.strip()
+        except Exception as e:
+
+            log(f"Error: {e}")
 
     def precio(self):
-        price = self.soup.find(id="priceblock_ourprice") or self.soup.find(id="price_inside_buybox") or self.soup.find(
+        try:
+            price = self.soup.find(id="priceblock_ourprice") or self.soup.find(id="price_inside_buybox") or self.soup.find(
             id="a-autoid-6-announce") or self.soup.find(id="newBuyBoxPrice") or self.soup.find(id="price") or self.soup.find(id="a-autoid-2-announce")
-        return price.text.strip() if price is not None else "Precio no encontrado"
+            return price.text.strip() if price is not None else "Precio no encontrado"
+            
+        except Exception as e:
+
+            log(f"Error: {e}")
+        
 
     def marca(self):
-        marca = self.soup.find(id="bylineInfo")
-        return marca.text.replace("Visit the", "").replace("Store", "").replace("Brand:", "").strip() if marca is not None else "Genérica"
+        try:
+            marca = self.soup.find(id="bylineInfo")
+            return marca.text.replace("Visit the", "").replace("Store", "").replace("Brand:", "").strip() if marca is not None else "Genérica"
+        except Exception as e:
+
+            log(f"Error: {e}")
 
     def imagenes(self):
-        patron = re.compile('(?<="hiRes":")(.*?)(?=")',
-                            re.MULTILINE | re.DOTALL)
-        imagenes = self.soup.find(id="imageBlock_feature_div")
-        imagenes = imagenes.find(text=re.compile(
-            '(?<="hiRes":")(.*?)(?=")', re.MULTILINE | re.DOTALL))
-        imagenes = re.findall(patron, str(imagenes))
+        try:
+            patron = re.compile('(?<="hiRes":")(.*?)(?=")',
+                                re.MULTILINE | re.DOTALL)
+            imagenes = self.soup.find(id="imageBlock_feature_div")
+            imagenes = imagenes.find(text=re.compile(
+                '(?<="hiRes":")(.*?)(?=")', re.MULTILINE | re.DOTALL))
+            imagenes = re.findall(patron, str(imagenes))
 
-        return imagenes
+            return imagenes
+        except Exception as e:
+
+            log(f"Error: {e}")
 
     def disponibilidad(self):
-        availability = self.soup.find(id="availability") or self.soup.find(
-            id="exports_desktop_outOfStock_buybox_message_feature_div") or self.soup.find(id="ccbp-bb-primary-msg")
-        return availability.text.replace("\n", "") if availability is not None else "Disponibilidad no encontrada"
+        try:
+
+            availability = self.soup.find(id="availability") or self.soup.find(
+                id="exports_desktop_outOfStock_buybox_message_feature_div") or self.soup.find(id="ccbp-bb-primary-msg")
+            return availability.text.replace("\n", "") if availability is not None else "Disponibilidad no encontrada"
+        except Exception as e:
+
+            log(f"Error: {e}")
         
     def stock(self):
         stock = None
