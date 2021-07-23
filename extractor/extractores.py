@@ -35,7 +35,7 @@ class Extractor():
             respons (requests): Recibe un request.text, desde una peticion a https://amazon.com/dp/sku 
         """
         self.soup = BeautifulSoup(respons, "html.parser")
-        print(self.soup.text)
+        # print(self.soup.text)
 
     def titulo(self) -> str:
         """ Esta funcion retorna el titulo del producto de Amazon

@@ -13,7 +13,8 @@ pool = eventlet.GreenPool(conf.max_hilos)
 pile = eventlet.GreenPile(pool)
 
 tiempo_inicio = datetime.now()
-paula = "sku_15923319"
+paula = "sku_652703678"
+
 def iniciar_scraper():
     """ punto de partida para el scraping de datos de amazon
     """
@@ -59,7 +60,7 @@ def iniciar_scraper():
 
     
 if __name__ == '__main__':
-    paula = "sku_15923319"
+    paula = "sku_652703678"
 
     print(counts(paula))
 

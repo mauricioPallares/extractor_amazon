@@ -1,12 +1,13 @@
 import eventlet
-import os, time
+import os, random
 
+from user_agent import generate_user_agent
 import random
 from datetime import datetime
 from urllib.parse import urlencode
 import redis
 import configuraciones as conf
-from ua import users_agents
+# from ua import users_agents
 # from requests.exceptions import ConnectionError
 
 redis = redis.StrictRedis(host=conf.redis_host,
@@ -36,11 +37,12 @@ def realizar_peticion(sku: str):
     reintentos = 0
     while (reintentos < REINTENTOS):
         try:
+            # time.sleep(random.randint(1,6))
             r = requests.get(
                 url=amazon_url(sku),
                 headers=get_header(),
                 proxies=proxies)
-
+            # print(r.status_code)
             if r.status_code in [200, 404]:
                 ya_descargado(sku)
                 break
@@ -145,7 +147,7 @@ def get_header() -> dict:
         dict: diccionario de encabezados
     """
     # conf.headers.update({"User-Agent": random.choice(users_agents)})
-    conf.headers.update({"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36"})
+    conf.headers.update({"User-Agent": generate_user_agent()})
     return conf.headers
 
 
