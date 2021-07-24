@@ -12,7 +12,7 @@ disponibilidad_true = [
     "Usually ships within",
     "Usually ships soon.",
     "Available to ship",
-    
+
 ]
 disponibilidad_false = [
     "Temporarily out of stock",
@@ -23,6 +23,7 @@ disponibilidad_false = [
     "in stock on",
 ]
 cantidad_minima = 3
+
 
 class Extractor():
     """ Clase Extractor, posee metodos para extraer informacion estructurada de un producto de la tienda en linea amazon
@@ -52,25 +53,42 @@ class Extractor():
             log(f"Error: {e}")
 
     def precio(self):
+        """Funcion que extrae el prcio de un producto de amazon
+
+        Returns:
+            str: precio del producto
+        """
         try:
+
             price = self.soup.find(id="priceblock_ourprice") or self.soup.find(id="price_inside_buybox") or self.soup.find(
-            id="a-autoid-6-announce") or self.soup.find(id="newBuyBoxPrice") or self.soup.find(id="price") or self.soup.find(id="a-autoid-2-announce")
+                id="a-autoid-6-announce") or self.soup.find(id="newBuyBoxPrice") or self.soup.find(id="price") or self.soup.find(id="a-autoid-2-announce")
             return price.text.strip() if price is not None else "Precio no encontrado"
-            
+
         except Exception as e:
 
             log(f"Error: {e}")
-        
 
     def marca(self):
+
+        """Esta funcion extrae la informacion de la marca de un producto de amazon, en caso de no encontrar pondra por defecto marca Generica
+
+        Returns:
+            str: Marca del producto
+        """
         try:
             marca = self.soup.find(id="bylineInfo")
             return marca.text.replace("Visit the", "").replace("Store", "").replace("Brand:", "").strip() if marca is not None else "Genérica"
         except Exception as e:
 
             log(f"Error: {e}")
+            return
 
     def imagenes(self):
+        """Esta funcion retorna un listado con las imagenes de un producto de amazon atraves de una expresion regular
+
+        Returns:
+            list: lista de imagenes de un producto de amazon
+        """
         try:
             patron = re.compile('(?<="hiRes":")(.*?)(?=")',
                                 re.MULTILINE | re.DOTALL)
@@ -83,17 +101,27 @@ class Extractor():
         except Exception as e:
 
             log(f"Error: {e}")
+            return ""
 
     def disponibilidad(self):
         try:
 
             availability = self.soup.find(id="availability") or self.soup.find(
                 id="exports_desktop_outOfStock_buybox_message_feature_div") or self.soup.find(id="ccbp-bb-primary-msg")
-            return availability.text.replace("\n", "") if availability is not None else "Disponibilidad no encontrada"
+
+            availability = availability.text.replace("\n", "").strip() if availability is not None else "Disponibilidad no encontrada"
+
+            availability = availability if availability != "" else "Disponibilidad no encontrada"
+
+            return availability
+
+
+
         except Exception as e:
 
             log(f"Error: {e}")
-        
+            return "Disponibilidad no encontrada"
+
     def stock(self):
         stock = None
 
@@ -102,7 +130,6 @@ class Extractor():
                 stock = "En Stock"
                 break
 
-        
         for dip in disponibilidad_false:
             if self.disponibilidad().lower().startswith(dip.lower()):
                 stock = "Sin Stock"
@@ -113,8 +140,9 @@ class Extractor():
                 stock = "Sin Stock"
 
         if not stock:
-            if self.disponibilidad().startswith("only"):
-                cant = [int(s) for s in self.disponibilidad().split() if s.isdigit()]
+            if self.disponibilidad().lower().startswith("only"):
+                cant = [int(s)
+                        for s in self.disponibilidad().split() if s.isdigit()]
                 if cant[0] >= cantidad_minima:
 
                     stock = "En Stock"
@@ -186,8 +214,6 @@ class Extractor():
                             break
 
         return peso
-
-
 
 
 if __name__ == '__main__':

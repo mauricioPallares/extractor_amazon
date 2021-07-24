@@ -13,7 +13,7 @@ pool = eventlet.GreenPool(conf.max_hilos)
 pile = eventlet.GreenPile(pool)
 
 tiempo_inicio = datetime.now()
-paula = "sku_652703678"
+paula = "upd_dips"
 
 def iniciar_scraper():
     """ punto de partida para el scraping de datos de amazon
@@ -29,38 +29,36 @@ def iniciar_scraper():
     #     pile.spawn(iniciar_scraper)
     #     return
     
-    if not Producto.esta_en_DB(sku):
-        soup = realizar_peticion(sku)
-
-        if not soup:
-            return
+    # if not Producto.esta_en_DB(sku):
+    soup = realizar_peticion(sku)
+    if not soup:
+        return
+    
+    ex = Extractor(soup.text)
+    producto = Producto(
+        sku = sku,
+        titulo  = limpiarTexto(ex.titulo()),
+        precio  =  limpiarPrecio(ex.precio()),
+        marca  = fixmarca(ex.marca()),
+        imagenes  = ex.imagenes(),
+        disponibilidad = limpiarTexto(ex.disponibilidad()),
+        stock = ex.stock(),
+        caracteristicas  = limpiarTexto(ex.caracteristicas()),
+        descripcion  = limpiarTexto(ex.descripcion()),
+        peso = limpiaPeso(ex.peso()),
+    )
+    print(producto)
+    producto.act_disp()
         
-        ex = Extractor(soup.text)
-
-        producto = Producto(
-            sku = sku,
-            titulo  = limpiarTexto(ex.titulo()),
-            precio  =  limpiarPrecio(ex.precio()),
-            marca  = fixmarca(ex.marca()),
-            imagenes  = ex.imagenes(),
-            disponibilidad = limpiarTexto(ex.disponibilidad()),
-            stock = ex.stock(),
-            caracteristicas  = limpiarTexto(ex.caracteristicas()),
-            descripcion  = limpiarTexto(ex.descripcion()),
-            peso = limpiaPeso(ex.peso()),
-        )
-        print(producto)
-        producto.guardar()
-        
-    else:
-        # print(f"El sku: {sku} ya esta en la base de datos ")
-        log(f"ADVERTENCIA: El sku: {sku} ya esta en la base de datos.")
+    # else:
+    #     # print(f"El sku: {sku} ya esta en la base de datos ")
+    #     log(f"ADVERTENCIA: El sku: {sku} ya esta en la base de datos.")
     
     # log(f"INFO: operacion terminada sku: {sku}.")
 
     
 if __name__ == '__main__':
-    paula = "sku_652703678"
+    paula = "upd_dips"
 
     print(counts(paula))
 

@@ -15,10 +15,11 @@ cursor = con.cursor( dictionary=True)
 class Producto(object):
 
 
-    def __init__(self, sku = None, titulo = None, precio = None, marca = None, disponibilidad = None, stock = None, descripcion = None, caracteristicas = None, imagenes = None, peso = None):
+    def __init__(self, sku = None, titulo = None, titulo_default = None, precio = None, marca = None, disponibilidad = None, stock = None, descripcion = None, caracteristicas = None, imagenes = None, peso = None):
         super(Producto, self).__init__()
         self.__sku = sku
         self.__titulo = titulo
+        self.__titulo_default = titulo_default
         self.__precio = precio
         self.__marca = marca
         self.__disponibilidad = disponibilidad
@@ -39,7 +40,14 @@ class Producto(object):
     @property
     def titulo(self):
         return self.__titulo
+    @property
+    def tituloDefault(self):
+        return self.__titulo_default
     
+    @tituloDefault.setter
+    def tituloDefault(self, tituloDefault):
+        self.__titulo_default = tituloDefault
+
     @titulo.setter
     def titulo(self, titulo):
         self.__titulo = titulo
@@ -110,16 +118,18 @@ class Producto(object):
     def guardar(self):
         sql = """
         INSERT IGNORE INTO 
-            productos_paula (sku, titulo, precio, marca, disponibilidad, descripcion, caracteristicas, peso, imagenes) 
+            productos_andres_descarga (sku, titulo, titulo_default, precio, marca, disponibilidad,stock, descripcion, caracteristicas, peso, imagenes) 
         VALUES 
-            (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+            (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
 
         cursor.execute(sql,(
         self.__sku,
         self.__titulo,
+        self.__titulo_default,
         self.__precio,
         self.__marca,
         self.__disponibilidad,
+        self.__stock,
         self.__descripcion,
         self.__caracteristicas,
         self.__peso,
@@ -139,7 +149,17 @@ class Producto(object):
         ))
 
         con.commit()
-    
+    def act_disp(self):
+        sql = "UPDATE productos_paula SET disponibilidad = %s, stock = %s WHERE sku = %s"
+
+        cursor.execute(sql, (
+            self.__disponibilidad,
+            self.__stock,
+            self.__sku
+        ))
+
+        con.commit()
+
     def actualizar_stock(self):
         
         sql = "UPDATE producto SET precio = %s , inStock = %s WHERE sku = %s"
@@ -159,7 +179,7 @@ class Producto(object):
 
     @staticmethod
     def esta_en_DB(sku):
-        sql = "SELECT sku FROM productos_paula WHERE sku=%s"
+        sql = "SELECT sku FROM productos_andres_descarga WHERE sku=%s"
         val = (sku,)
         cursor.execute(sql, val)
         data = cursor.fetchone()        

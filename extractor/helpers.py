@@ -1,5 +1,6 @@
 import eventlet
-import os, random
+import json
+import random
 
 from user_agent import generate_user_agent
 import random
@@ -92,8 +93,8 @@ def log(msg: str, sku: str = None):
 # colas de skus
 
 
-def enCola(sku):
-    return redis.sadd("sku", sku)
+def enCola(conjunto, sku):
+    return redis.sadd(conjunto, sku)
 
 
 def quitarCola(conjunto):
@@ -175,8 +176,9 @@ def get_proxy() -> dict:
     }
 
 
+    
+def sku_titulo(conjunto):
+    return json.loads(redis.spop(conjunto).decode("utf-8"))
+    
 if __name__ == '__main__':
-    from extractores import Extractor
-    r = realizar_peticion(sku= "B08LMPP92X")
-    ex = Extractor(r.text)
-    # print(realizar_peticion(sku= "B08LMPP92X"))
+    print(sku_titulo("skus_extract_andres")['sku'])
