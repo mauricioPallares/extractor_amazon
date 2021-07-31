@@ -13,14 +13,14 @@ pool = eventlet.GreenPool(conf.max_hilos)
 pile = eventlet.GreenPile(pool)
 
 tiempo_inicio = datetime.now()
-paula = "upd_dips"
+total = "skus_totales" #listado de total
 
 def iniciar_scraper():
     """ punto de partida para el scraping de datos de amazon
     """
     global tiempo_inicio
 
-    sku = quitarCola(paula)
+    sku = quitarCola(total)
     
     log(f"INFO: Iniciando la extraccion del sku.", sku = sku)
     # if not sku:
@@ -48,7 +48,8 @@ def iniciar_scraper():
         peso = limpiaPeso(ex.peso()),
     )
     print(producto)
-    producto.act_disp()
+    producto.guardar()
+    # producto.act_disp()
         
     # else:
     #     # print(f"El sku: {sku} ya esta en la base de datos ")
@@ -58,15 +59,15 @@ def iniciar_scraper():
 
     
 if __name__ == '__main__':
-    paula = "upd_dips"
+   
 
-    print(counts(paula))
+    print(counts(total))
 
-    while(counts(paula) > 0):
+    while(counts(total) > 0):
         [pile.spawn(iniciar_scraper) for _ in range(conf.max_hilos)]
         
     pool.waitall()
-    
+    # iniciar_scraper()
     
 
     print(f"la extraccion inicio a {tiempo_inicio} y termino a {datetime.now()}")

@@ -45,7 +45,7 @@ def realizar_peticion(sku: str):
                 proxies=proxies)
             # print(r.status_code)
             if r.status_code in [200, 404]:
-                ya_descargado(sku)
+                ya_descargado("totales",sku)
                 break
 
         # except requests.ConnectionError as e:
@@ -62,6 +62,7 @@ def realizar_peticion(sku: str):
         except Exception as e:
             # error quitar r
             log(f"ERROR: {e}", sku = sku)
+            no_descargado("totales", sku)
             time.sleep(5)
             reintentos += 1
 
@@ -100,8 +101,7 @@ def enCola(conjunto, sku):
 def quitarCola(conjunto):
     return redis.spop(conjunto).decode("utf-8")
 
-def ya_descargado(sku):
-    return redis.sadd("descargado", sku)
+
 
 def cola_actualizacion():
     return redis.spop("sku_652703678").decode("utf-8")
@@ -118,6 +118,11 @@ def counts(conjunto):
 def num_cola():
     return redis.scard("sku_652703678")
 
+def no_descargado(cliente, sku):
+    return redis.sadd(f"no_descargados_{cliente}", sku)
+
+def ya_descargado(cliente, sku):
+    return redis.sadd(f"descargados_{cliente}", sku)
 
 def lista_actualizados(sku: str):
     return redis.sadd("actualizados", sku)
@@ -181,4 +186,25 @@ def sku_titulo(conjunto):
     return json.loads(redis.spop(conjunto).decode("utf-8"))
     
 if __name__ == '__main__':
-    print(sku_titulo("skus_extract_andres")['sku'])
+    from modelo import con, cursor
+
+    nombre_paquete = "skus_totales"
+    
+    # sql = "SELECT sku FROM productos_andres"
+
+    # cursor.execute(sql,)
+    # datos = cursor.fetchall()
+
+    # print(f"Agregando la primera carga de {len(datos)}")
+
+    # for dato in datos:
+    #     enCola(nombre_paquete, dato['sku'])
+
+    sql = "SELECT sku FROM productos_paula"
+
+    cursor.execute(sql,)
+    datos = cursor.fetchall()
+
+    print(f"Agregando la segunda carga de {len(datos)}")
+    for dato in datos:
+        enCola(nombre_paquete, dato['sku'])

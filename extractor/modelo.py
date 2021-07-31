@@ -116,16 +116,21 @@ class Producto(object):
         self.__peso = peso
 
     def guardar(self):
+        # sql = """
+        # INSERT IGNORE INTO 
+        #     productos_andres (sku, titulo, titulo_default, precio, marca, disponibilidad,stock, descripcion, caracteristicas, peso, imagenes) 
+        # VALUES 
+        #     (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
         sql = """
         INSERT IGNORE INTO 
-            productos_andres_descarga (sku, titulo, titulo_default, precio, marca, disponibilidad,stock, descripcion, caracteristicas, peso, imagenes) 
+            productos_all (sku, titulo, precio, marca, disponibilidad,stock, descripcion, caracteristicas, peso, imagenes) 
         VALUES 
-            (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+            (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
 
         cursor.execute(sql,(
         self.__sku,
         self.__titulo,
-        self.__titulo_default,
+        # self.__titulo_default,
         self.__precio,
         self.__marca,
         self.__disponibilidad,
@@ -139,7 +144,7 @@ class Producto(object):
         con.commit()
     
     def actualizar(self):
-        sql = "UPDATE productos_paula SET precio = %s , disponibilidad = %s WHERE sku = %s"
+        sql = "UPDATE productos_andres SET precio = %s , disponibilidad = %s WHERE sku = %s"
         
 
         cursor.execute(sql, (
@@ -150,7 +155,7 @@ class Producto(object):
 
         con.commit()
     def act_disp(self):
-        sql = "UPDATE productos_paula SET disponibilidad = %s, stock = %s WHERE sku = %s"
+        sql = "UPDATE productos_andres SET disponibilidad = %s, stock = %s WHERE sku = %s"
 
         cursor.execute(sql, (
             self.__disponibilidad,
@@ -179,7 +184,7 @@ class Producto(object):
 
     @staticmethod
     def esta_en_DB(sku):
-        sql = "SELECT sku FROM productos_andres_descarga WHERE sku=%s"
+        sql = "SELECT sku FROM productos_all WHERE sku=%s"
         val = (sku,)
         cursor.execute(sql, val)
         data = cursor.fetchone()        

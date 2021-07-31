@@ -109,11 +109,14 @@ class Extractor():
             availability = self.soup.find(id="availability") or self.soup.find(
                 id="exports_desktop_outOfStock_buybox_message_feature_div") or self.soup.find(id="ccbp-bb-primary-msg")
 
-            availability = availability.text.replace("\n", "").strip() if availability is not None else "Disponibilidad no encontrada"
+            availability = availability.text.replace("\n", "").strip() if availability is not None else ""
 
-            availability = availability if availability != "" else "Disponibilidad no encontrada"
+            # availability = availability if availability != "" else "Disponibilidad no encontrada"
 
-            return availability
+            if (availability is None or  availability == "") and (self.precio() != None or self.precio() != "") :
+                return "In Stock."
+            else:
+                return availability
 
 
 
@@ -218,9 +221,10 @@ class Extractor():
 
 if __name__ == '__main__':
 
-    soup = realizar_peticion("B07V4FTX6C")
+    soup = realizar_peticion("1607059495")
     ex = Extractor(soup.text)
 
     print(ex.titulo())
     print(ex.disponibilidad())
     print(ex.stock())
+    print(ex.precio())
