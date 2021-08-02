@@ -193,7 +193,14 @@ class Producto(object):
         else:
             return False
     
+    def act_precio(self)-> str:
+        sql = "UPDATE producto SET precio = %s WHERE sku = %s"
+        cursor.execute(sql, (
+            self.__precio,
+            self.__sku
+        ))
 
+        con.commit()
         
 
 

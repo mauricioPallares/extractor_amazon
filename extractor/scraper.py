@@ -4,7 +4,7 @@ from datetime import datetime
 import configuraciones as conf 
 
 from modelo import Producto
-from helpers import realizar_peticion, quitarCola, counts, log
+from helpers import splash_request, quitarCola, counts, log, normal_request
 from extractores import Extractor 
 from formato import limpiarTexto, limpiaPeso, limpiarPrecio, fixmarca
 
@@ -13,7 +13,7 @@ pool = eventlet.GreenPool(conf.max_hilos)
 pile = eventlet.GreenPile(pool)
 
 tiempo_inicio = datetime.now()
-total = "skus_totales" #listado de total
+total = "sku" #listado de total
 
 def iniciar_scraper():
     """ punto de partida para el scraping de datos de amazon
@@ -30,7 +30,7 @@ def iniciar_scraper():
     #     return
     
     # if not Producto.esta_en_DB(sku):
-    soup = realizar_peticion(sku)
+    soup = normal_request(sku)
     if not soup:
         return
     
@@ -48,6 +48,16 @@ def iniciar_scraper():
         peso = limpiaPeso(ex.peso()),
     )
     print(producto)
+    
+
+    if producto.precio == "Precio no encontrado" and producto.stock == "En Stock":
+        print(sku)
+        new_soup = splash_request(sku=sku)
+        ex = Extractor(new_soup.text)
+        producto.precio = ex.precio_splash()
+
+        print(producto)
+    
     producto.guardar()
     # producto.act_disp()
         
@@ -71,4 +81,5 @@ if __name__ == '__main__':
     
 
     print(f"la extraccion inicio a {tiempo_inicio} y termino a {datetime.now()}")
+    
     

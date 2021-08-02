@@ -3,7 +3,7 @@ import math
 from bs4 import BeautifulSoup
 from formato import normalizarTexto
 from helpers import log
-from helpers import realizar_peticion
+from helpers import normal_request
 
 unidad_peso = ["pounds", "ounces", "kilograms"]
 peso_en = ["Item Weight", "Package Dimensions", "Product Dimensions"]
@@ -22,7 +22,7 @@ disponibilidad_false = [
     "in stock soon",
     "in stock on",
 ]
-cantidad_minima = 3
+cantidad_minima = 0
 
 
 class Extractor():
@@ -67,6 +67,24 @@ class Extractor():
         except Exception as e:
 
             log(f"Error: {e}")
+
+    def precio_splash(self):
+        try:
+            precios = []
+
+            ofertas = self.soup.find(id='aod-offer-list')
+            ofertas = ofertas.find_all(id='aod-offer-price')
+
+            for oferta in ofertas:
+                
+                precio = oferta.find('span', {'class': 'a-offscreen'}).text
+                precio = precio.replace("$", "")
+                precios.append(float(precio))
+            
+            return max(precios)
+        except Exception as e:
+            print(e, "error al no existir dato")
+            return 
 
     def marca(self):
 
