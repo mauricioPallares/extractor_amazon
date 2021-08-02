@@ -38,6 +38,8 @@ class Extractor():
         self.soup = BeautifulSoup(respons, "html.parser")
         # print(self.soup.text)
 
+        
+
     def titulo(self) -> str:
         """ Esta funcion retorna el titulo del producto de Amazon
 
@@ -238,11 +240,4 @@ class Extractor():
 
 
 if __name__ == '__main__':
-
-    soup = realizar_peticion("1607059495")
-    ex = Extractor(soup.text)
-
-    print(ex.titulo())
-    print(ex.disponibilidad())
-    print(ex.stock())
-    print(ex.precio())
+    pass

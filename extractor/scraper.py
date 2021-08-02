@@ -4,7 +4,7 @@ from datetime import datetime
 import configuraciones as conf 
 
 from modelo import Producto
-from helpers import splash_request, quitarCola, counts, log, normal_request
+from helpers import splash_request, quitarCola, counts, log, normal_request, enCola
 from extractores import Extractor 
 from formato import limpiarTexto, limpiaPeso, limpiarPrecio, fixmarca
 
@@ -13,14 +13,16 @@ pool = eventlet.GreenPool(conf.max_hilos)
 pile = eventlet.GreenPile(pool)
 
 tiempo_inicio = datetime.now()
-total = "sku" #listado de total
+
+bd_redis = "sku_652703678" #listado de bd_redis
+tabla_bd = "productos_junior" #listado de
 
 def iniciar_scraper():
     """ punto de partida para el scraping de datos de amazon
     """
     global tiempo_inicio
 
-    sku = quitarCola(total)
+    sku = quitarCola(bd_redis)
     
     log(f"INFO: Iniciando la extraccion del sku.", sku = sku)
     # if not sku:
@@ -29,14 +31,16 @@ def iniciar_scraper():
     #     pile.spawn(iniciar_scraper)
     #     return
     
-    # if not Producto.esta_en_DB(sku):
+    # if not Producto.esta_en_DB(sku, tabla_bd):
     soup = normal_request(sku)
     if not soup:
         return
     
     ex = Extractor(soup.text)
+
     producto = Producto(
         sku = sku,
+        tabla= tabla_bd,
         titulo  = limpiarTexto(ex.titulo()),
         precio  =  limpiarPrecio(ex.precio()),
         marca  = fixmarca(ex.marca()),
@@ -51,12 +55,13 @@ def iniciar_scraper():
     
 
     if producto.precio == "Precio no encontrado" and producto.stock == "En Stock":
-        print(sku)
-        new_soup = splash_request(sku=sku)
-        ex = Extractor(new_soup.text)
-        producto.precio = ex.precio_splash()
+        print(sku + " pasado a cola de extraccion de splash")
+        enCola("splash_junior", sku)
+        # new_soup = splash_request(sku=sku)
+        # ex = Extractor(new_soup.text)
+        # producto.precio = ex.precio_splash()
 
-        print(producto)
+        # print(producto)
     
     producto.guardar()
     # producto.act_disp()
@@ -71,13 +76,13 @@ def iniciar_scraper():
 if __name__ == '__main__':
    
 
-    print(counts(total))
+    print(counts(bd_redis))
 
-    while(counts(total) > 0):
-        [pile.spawn(iniciar_scraper) for _ in range(conf.max_hilos)]
+    # while(counts(bd_redis) > 0):
+    #     [pile.spawn(iniciar_scraper) for _ in range(conf.max_hilos)]
         
-    pool.waitall()
-    # iniciar_scraper()
+    # pool.waitall()
+    iniciar_scraper()
     
 
     print(f"la extraccion inicio a {tiempo_inicio} y termino a {datetime.now()}")

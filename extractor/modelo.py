@@ -15,7 +15,7 @@ cursor = con.cursor( dictionary=True)
 class Producto(object):
 
 
-    def __init__(self, sku = None, titulo = None, titulo_default = None, precio = None, marca = None, disponibilidad = None, stock = None, descripcion = None, caracteristicas = None, imagenes = None, peso = None):
+    def __init__(self, sku = None, titulo = None, titulo_default = None, precio = None, marca = None, disponibilidad = None, stock = None, descripcion = None, caracteristicas = None, imagenes = ["","",""], peso = None, tabla = "productos"):
         super(Producto, self).__init__()
         self.__sku = sku
         self.__titulo = titulo
@@ -28,6 +28,8 @@ class Producto(object):
         self.__caracteristicas = caracteristicas
         self.__imagenes = imagenes
         self.__peso = peso
+
+        self.__tabla = tabla
 
     @property
     def sku(self):
@@ -102,7 +104,14 @@ class Producto(object):
     @property
     def imagenes(self):
         return self.__imagenes
+    @property
+    def tabla(self):
+        return self.__tabla
     
+    @tabla.setter
+    def tabla(self, tabla):
+        self.__tabla = tabla
+        
     @imagenes.setter
     def imagenes(self, imagenes):
         self.__imagenes = imagenes
@@ -118,16 +127,17 @@ class Producto(object):
     def guardar(self):
         # sql = """
         # INSERT IGNORE INTO 
-        #     productos_andres (sku, titulo, titulo_default, precio, marca, disponibilidad,stock, descripcion, caracteristicas, peso, imagenes) 
+        #     %s (sku, titulo, titulo_default, precio, marca, disponibilidad,stock, descripcion, caracteristicas, peso, imagenes) 
         # VALUES 
         #     (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-        sql = """
+        sql = f"""
         INSERT IGNORE INTO 
-            productos_all (sku, titulo, precio, marca, disponibilidad,stock, descripcion, caracteristicas, peso, imagenes) 
+            {self.__tabla} (sku, titulo, precio, marca, disponibilidad,stock, descripcion, caracteristicas, peso, imagenes) 
         VALUES 
             (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
 
         cursor.execute(sql,(
+        
         self.__sku,
         self.__titulo,
         # self.__titulo_default,
@@ -144,7 +154,7 @@ class Producto(object):
         con.commit()
     
     def actualizar(self):
-        sql = "UPDATE productos_andres SET precio = %s , disponibilidad = %s WHERE sku = %s"
+        sql = f"UPDATE {self.__tabla} SET precio = %s , disponibilidad = %s WHERE sku = %s"
         
 
         cursor.execute(sql, (
@@ -155,7 +165,7 @@ class Producto(object):
 
         con.commit()
     def act_disp(self):
-        sql = "UPDATE productos_andres SET disponibilidad = %s, stock = %s WHERE sku = %s"
+        sql = f"UPDATE {self.__tabla} SET disponibilidad = %s, stock = %s WHERE sku = %s"
 
         cursor.execute(sql, (
             self.__disponibilidad,
@@ -183,8 +193,8 @@ class Producto(object):
         return json.dumps(self.__dict__, indent=2, separators=(',', ' : '))
 
     @staticmethod
-    def esta_en_DB(sku):
-        sql = "SELECT sku FROM productos_all WHERE sku=%s"
+    def esta_en_DB(sku, tabla):
+        sql = f"SELECT sku FROM {tabla} WHERE sku=%s"
         val = (sku,)
         cursor.execute(sql, val)
         data = cursor.fetchone()        
@@ -194,8 +204,9 @@ class Producto(object):
             return False
     
     def act_precio(self)-> str:
-        sql = "UPDATE producto SET precio = %s WHERE sku = %s"
+        sql = f"UPDATE {self.__tabla} SET precio = %s WHERE sku = %s"
         cursor.execute(sql, (
+            
             self.__precio,
             self.__sku
         ))
@@ -235,13 +246,14 @@ class Producto(object):
 
 if __name__ == "__main__":
 
-    print(Producto.esta_en_DB("024370349X"))
+    print(Producto.esta_en_DB("024370349X", "productos_junior"))
 
     p = Producto()
 
     p.sku = "024370349X"
     p.precio = "18.90"
     p.stock = "En Stock"
+    p.tabla = "productos_junior"
 
     print(p)
-    p.actualizar_stock()
+    p.guardar()
