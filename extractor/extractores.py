@@ -1,9 +1,9 @@
 import re
-import math
+# import math
 from bs4 import BeautifulSoup
 from formato import normalizarTexto
 from helpers import log
-from helpers import normal_request
+# from helpers import normal_request
 
 unidad_peso = ["pounds", "ounces", "kilograms"]
 peso_en = ["Item Weight", "Package Dimensions", "Product Dimensions"]
@@ -30,15 +30,12 @@ class Extractor():
     """
 
     def __init__(self, respons):
-        """[summary]
-
+        """
         Args:
             respons (requests): Recibe un request.text, desde una peticion a https://amazon.com/dp/sku 
         """
         self.soup = BeautifulSoup(respons, "html.parser")
         # print(self.soup.text)
-
-        
 
     def titulo(self) -> str:
         """ Esta funcion retorna el titulo del producto de Amazon
@@ -49,10 +46,13 @@ class Extractor():
         try:
 
             titulo = self.soup.find(id='productTitle')
-            return titulo.text.strip()
+            titulo = titulo.text.strip()
         except Exception as e:
 
-            log(f"Error: {e}")
+            log(f"Error en el titulo: {e}")
+            titulo = ""
+
+        return titulo
 
     def precio(self):
         """Funcion que extrae el prcio de un producto de amazon
@@ -62,13 +62,27 @@ class Extractor():
         """
         try:
 
-            price = self.soup.find(id="priceblock_ourprice") or self.soup.find(id="price_inside_buybox") or self.soup.find(
-                id="a-autoid-6-announce") or self.soup.find(id="newBuyBoxPrice") or self.soup.find(id="price") or self.soup.find(id="a-autoid-2-announce")
-            return price.text.strip() if price is not None else "Precio no encontrado"
+            price = self.soup.find(
+                id="priceblock_ourprice"
+            ) or self.soup.find(
+                id="price_inside_buybox"
+            ) or self.soup.find(
+                id="a-autoid-6-announce"
+            ) or self.soup.find(
+                id="newBuyBoxPrice"
+            ) or self.soup.find(
+                id="price"
+            ) or self.soup.find(
+                id="a-autoid-2-announce")
+
+            price = price.text.strip() if price is not None else "Precio no encontrado"
 
         except Exception as e:
 
-            log(f"Error: {e}")
+            log(f"Error en el precio: {e}")
+            price = ""
+
+        return price
 
     def precio_splash(self):
         try:
@@ -78,18 +92,17 @@ class Extractor():
             ofertas = ofertas.find_all(id='aod-offer-price')
 
             for oferta in ofertas:
-                
+
                 precio = oferta.find('span', {'class': 'a-offscreen'}).text
                 precio = precio.replace("$", "")
                 precios.append(float(precio))
-            
+
             return max(precios)
         except Exception as e:
             print(e, "error al no existir dato")
-            return 
+            return
 
     def marca(self):
-
         """Esta funcion extrae la informacion de la marca de un producto de amazon, en caso de no encontrar pondra por defecto marca Generica
 
         Returns:
@@ -97,11 +110,19 @@ class Extractor():
         """
         try:
             marca = self.soup.find(id="bylineInfo")
-            return marca.text.replace("Visit the", "").replace("Store", "").replace("Brand:", "").strip() if marca is not None else "Genérica"
+
+            marca = marca.text.replace("Visit the", "")
+            marca = marca.replace("Store", "")
+            marca = marca.replace("Brand:", "").strip()
+
+            marca = marca if marca is not None else "Genérica"
+
         except Exception as e:
 
-            log(f"Error: {e}")
-            return
+            log(f"Error en la marca: {e}")
+            marca = "Genérica"
+
+        return marca
 
     def imagenes(self):
         """Esta funcion retorna un listado con las imagenes de un producto de amazon atraves de una expresion regular
@@ -112,60 +133,69 @@ class Extractor():
         try:
             patron = re.compile('(?<="hiRes":")(.*?)(?=")',
                                 re.MULTILINE | re.DOTALL)
+
             imagenes = self.soup.find(id="imageBlock_feature_div")
-            imagenes = imagenes.find(text=re.compile(
-                '(?<="hiRes":")(.*?)(?=")', re.MULTILINE | re.DOTALL))
+
+            # imagenes = imagenes.find(text=re.compile('(?<="hiRes":")(.*?)(?=")', re.MULTILINE | re.DOTALL))
+            imagenes = imagenes.find(text=patron)
             imagenes = re.findall(patron, str(imagenes))
 
             return imagenes
         except Exception as e:
 
-            log(f"Error: {e}")
+            log(f"Error en las imagenes: {e}")
             return ""
 
     def disponibilidad(self):
         try:
 
-            availability = self.soup.find(id="availability") or self.soup.find(
-                id="exports_desktop_outOfStock_buybox_message_feature_div") or self.soup.find(id="ccbp-bb-primary-msg")
+            availability = self.soup.find(
+                id="availability"
+            ) or self.soup.find(
+                id="exports_desktop_outOfStock_buybox_message_feature_div"
+            ) or self.soup.find(
+                id="ccbp-bb-primary-msg")
 
-            availability = availability.text.replace("\n", "").strip() if availability is not None else ""
-
+            availability = availability.text.replace(
+                "\n", "") if availability is not None else ""
+            availability = availability.strip() if availability is not None else ""
             # availability = availability if availability != "" else "Disponibilidad no encontrada"
 
-            if (availability is None or  availability == "") and (self.precio() != None or self.precio() != "") :
+            if (
+                availability is None or availability == ""
+            ) and (
+                self.precio() != None or self.precio() != "" or self.precio() == "Precio no encontrado"
+            ):
                 return "In Stock."
             else:
                 return availability
 
-
-
         except Exception as e:
 
-            log(f"Error: {e}")
+            log(f"Error en la disponibilidad: {e}")
             return "Disponibilidad no encontrada"
 
     def stock(self):
         stock = None
-
+        disponibilidad = self.disponibilidad()
         for dip in disponibilidad_true:
-            if self.disponibilidad().lower().startswith(dip.lower()):
+            if disponibilidad.lower().startswith(dip.lower()):
                 stock = "En Stock"
                 break
 
         for dip in disponibilidad_false:
-            if self.disponibilidad().lower().startswith(dip.lower()):
+            if disponibilidad.lower().startswith(dip.lower()):
                 stock = "Sin Stock"
                 break
 
         if not stock:
-            if self.disponibilidad() == "":
+            if disponibilidad == "":
                 stock = "Sin Stock"
 
         if not stock:
-            if self.disponibilidad().lower().startswith("only"):
+            if disponibilidad.lower().startswith("only"):
                 cant = [int(s)
-                        for s in self.disponibilidad().split() if s.isdigit()]
+                        for s in disponibilidad.split() if s.isdigit()]
                 if cant[0] >= cantidad_minima:
 
                     stock = "En Stock"
@@ -185,7 +215,7 @@ class Extractor():
             return caracteristicas
 
         except AttributeError:
-            log("Error: Atributo no encontrando.")
+            log("Error en las caracteristicas: Atributo no encontrando.")
             return ""
 
     def descripcion(self):

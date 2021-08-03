@@ -22,7 +22,7 @@ def iniciar_scraper():
     """
     global tiempo_inicio
 
-    sku = quitarCola(bd_redis)
+    sku = quitarCola(bd_redis) #"B01EK3YBGG"
     
     log(f"INFO: Iniciando la extraccion del sku.", sku = sku)
     # if not sku:
@@ -51,12 +51,16 @@ def iniciar_scraper():
         descripcion  = limpiarTexto(ex.descripcion()),
         peso = limpiaPeso(ex.peso()),
     )
+
     print(producto)
     
+    if producto.titulo == "":
+        print("Error captcha es solicitado")
+        exit()
 
     if producto.precio == "Precio no encontrado" and producto.stock == "En Stock":
         print(sku + " pasado a cola de extraccion de splash")
-        enCola("splash_junior", sku)
+        enCola("splash_junior_2", sku)
         # new_soup = splash_request(sku=sku)
         # ex = Extractor(new_soup.text)
         # producto.precio = ex.precio_splash()
