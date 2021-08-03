@@ -1,5 +1,5 @@
 from datetime import datetime
-
+import time
 
 import configuraciones as conf 
 
@@ -56,7 +56,8 @@ def iniciar_scraper():
     
     if producto.titulo == "":
         print("Error captcha es solicitado")
-        exit()
+        enCola("sku_652703678", sku)
+        time.sleep(10)
 
     if producto.precio == "Precio no encontrado" and producto.stock == "En Stock":
         print(sku + " pasado a cola de extraccion de splash")
@@ -66,8 +67,9 @@ def iniciar_scraper():
         # producto.precio = ex.precio_splash()
 
         # print(producto)
-    
-    producto.guardar()
+    if producto.titulo != "":
+
+        producto.guardar()
     # producto.act_disp()
         
     # else:

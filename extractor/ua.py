@@ -1,26 +1,34 @@
-import requests
-from stem.control import Controller
-from stem import Signal
+import re
+from bs4 import BeautifulSoup
+from helpers import normal_request
 
-def get_tor_session():
-    # initialize a requests Session
-    session = requests.Session()
-    # setting the proxy of both http & https to the localhost:9050 
-    # this requires a running Tor service in your machine and listening on port 9050 (by default)
-    session.proxies = {"http": "socks5://localhost:9050", "https": "socks5://localhost:9050"}
-    return session
+patron_hiRes = re.compile('(?<="hiRes":")(.*?)(?=")',
+                                re.MULTILINE | re.DOTALL)
+patron_large = re.compile('(?<="large":")(.*?)(?=")',
+                                re.MULTILINE | re.DOTALL)
 
-def renew_connection():
-    with Controller.from_port(port=9051) as c:
-        c.authenticate()
-        # send NEWNYM signal to establish a new clean connection through the Tor network
-        c.signal(Signal.NEWNYM)
+r = normal_request("1928576737")
 
-if __name__ == "__main__":
-    s = get_tor_session()
-    ip = s.get("http://icanhazip.com").text
-    print("IP:", ip)
-    renew_connection()
-    s = get_tor_session()
-    ip = s.get("http://icanhazip.com").text
-    print("IP:", ip)
+soup = BeautifulSoup(r.text, "html.parser")
+
+
+
+campo_imagenes = soup.find(id="imageBlock_feature_div")
+
+# imagenes = imagenes.find(text=re.compile('(?<="hiRes":")(.*?)(?=")', re.MULTILINE | re.DOTALL))
+imagenes1 = campo_imagenes.find(text=patron_hiRes)
+
+
+
+if imagenes1 :
+    imagenes1 = re.findall(patron_large, str(imagenes1))
+    img = imagenes1
+else :
+    imagenes2 = campo_imagenes.find(text=patron_large)
+
+    imagenes2 = re.findall(patron_large, str(imagenes2))
+    img = imagenes2
+    
+print(img)
+
+        

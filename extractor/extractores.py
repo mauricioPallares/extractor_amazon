@@ -131,16 +131,27 @@ class Extractor():
             list: lista de imagenes de un producto de amazon
         """
         try:
-            patron = re.compile('(?<="hiRes":")(.*?)(?=")',
+            patron_hiRes = re.compile('(?<="hiRes":")(.*?)(?=")',
+                                re.MULTILINE | re.DOTALL)
+            patron_large = re.compile('(?<="large":")(.*?)(?=")',
                                 re.MULTILINE | re.DOTALL)
 
-            imagenes = self.soup.find(id="imageBlock_feature_div")
+
+
+            campo_imagenes = self.soup.find(id="imageBlock_feature_div")
 
             # imagenes = imagenes.find(text=re.compile('(?<="hiRes":")(.*?)(?=")', re.MULTILINE | re.DOTALL))
-            imagenes = imagenes.find(text=patron)
-            imagenes = re.findall(patron, str(imagenes))
-
+            imagenes_hiRes = campo_imagenes.find(text=patron_hiRes)
+            if imagenes_hiRes:
+                imagenes = re.findall(patron_hiRes, str(imagenes_hiRes))
+            else:
+                imagenes_large = campo_imagenes.find(text=patron_large)
+                imagenes_large = re.findall(patron_large, str(imagenes_large))
+                imagenes = imagenes_large
+                
             return imagenes
+
+
         except Exception as e:
 
             log(f"Error en las imagenes: {e}")
@@ -270,4 +281,11 @@ class Extractor():
 
 
 if __name__ == '__main__':
-    pass
+    from helpers import normal_request
+
+    r = normal_request('B071YHQTXR')
+
+    ex = Extractor(r.text)
+    
+    print(ex.imagenes())
+    print(ex.titulo())
