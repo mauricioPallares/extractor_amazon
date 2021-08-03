@@ -78,11 +78,11 @@ if __name__ == '__main__':
 
     print(counts(bd_redis))
 
-    # while(counts(bd_redis) > 0):
-    #     [pile.spawn(iniciar_scraper) for _ in range(conf.max_hilos)]
+    while(counts(bd_redis) > 0):
+        [pile.spawn(iniciar_scraper) for _ in range(conf.max_hilos)]
         
-    # pool.waitall()
-    iniciar_scraper()
+    pool.waitall()
+    # iniciar_scraper()
     
 
     print(f"la extraccion inicio a {tiempo_inicio} y termino a {datetime.now()}")
