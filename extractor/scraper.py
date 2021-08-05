@@ -1,5 +1,6 @@
 from datetime import datetime
-import time
+
+import random
 
 import configuraciones as conf 
 
@@ -9,6 +10,8 @@ from extractores import Extractor
 from formato import limpiarTexto, limpiaPeso, limpiarPrecio, fixmarca
 
 import eventlet
+
+time = eventlet.import_patched('time')
 pool = eventlet.GreenPool(conf.max_hilos)
 pile = eventlet.GreenPile(pool)
 
@@ -30,7 +33,7 @@ def iniciar_scraper():
     #     log("ADVERTENCIA: sku no encotrado en cola. Reintentando...", sku = sku)
     #     pile.spawn(iniciar_scraper)
     #     return
-    
+    # time.sleep(random.randint(1,5))
     # if not Producto.esta_en_DB(sku, tabla_bd):
     soup = normal_request(sku)
     if not soup:
@@ -59,7 +62,7 @@ def iniciar_scraper():
         enCola("sku_652703678", sku)
         time.sleep(10)
 
-    if producto.precio == "Precio no encontrado" and producto.stock == "En Stock":
+    if producto.precio == "Precio no encontrado" and producto.stock == "En Stock" and producto.titulo != "":
         print(sku + " pasado a cola de extraccion de splash")
         enCola("splash_junior_2", sku)
         # new_soup = splash_request(sku=sku)
