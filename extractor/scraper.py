@@ -70,9 +70,9 @@ def iniciar_scraper():
         # producto.precio = ex.precio_splash()
 
         # print(producto)
-    if producto.titulo != "":
+    # if producto.titulo != "":
 
-        producto.guardar()
+    producto.actualizar()
     # producto.act_disp()
         
     # else:

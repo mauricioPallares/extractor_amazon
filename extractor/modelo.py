@@ -154,12 +154,13 @@ class Producto(object):
         con.commit()
     
     def actualizar(self):
-        sql = f"UPDATE {self.__tabla} SET precio = %s , disponibilidad = %s WHERE sku = %s"
+        sql = f"UPDATE {self.__tabla} SET precio = %s , disponibilidad = %s, stock = %s WHERE sku = %s"
         
 
         cursor.execute(sql, (
             self.__precio,
             self.__disponibilidad,
+            self.__stock,
             self.__sku
         ))
 
